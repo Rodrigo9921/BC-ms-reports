@@ -18,7 +18,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    @GetMapping("/create/{clientId}")
+    @PostMapping("/create/{clientId}")
     public Mono<ResponseEntity<ReportDto>> generateReport(@PathVariable String clientId, @RequestParam("reportDate") String reportDate) {
         return reportService.generateReport(clientId, LocalDate.parse(reportDate))
                 .map(ResponseEntity::ok)

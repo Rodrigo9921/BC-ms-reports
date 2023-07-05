@@ -41,6 +41,7 @@ public class ReportMapper {
                 .map(transactionList -> {
                     System.out.println(transactionList.size());
                     Map<LocalDate, List<TransactionDto>> transactionsByDate = transactionList.stream()
+                            .filter(transaction -> transaction.getTransactionDate() != null)
                             .collect(Collectors.groupingBy(transaction -> transaction.getTransactionDate().toLocalDate()));
 
                     double totalDailyBalances = transactionsByDate.entrySet().stream()
@@ -55,6 +56,18 @@ public class ReportMapper {
                 });
     }
 
+    public static double calculateTotalCommissions(List<TransactionDto> transactions) {
+        // Suma las comisiones de todas las transacciones
+        // Asume que la comisión se calcula como un porcentaje del monto de la transacción
+        // y que el porcentaje de la comisión se almacena en un campo 'commissionRate' en TransactionDto
+        // Si tu lógica para calcular las comisiones es diferente, necesitarás ajustar esto
+        return transactions.stream()
+                .filter(transaction -> transaction.getCommission() != null)
+                .mapToDouble(TransactionDto::getCommission)
+                .sum();
+    }
+
+}
     /*
     public static double calculateAverageDailyBalance(List<TransactionDto> transactions) {
         // Agrupa las transacciones por fecha y suma los montos de las transacciones de cada día
@@ -71,15 +84,4 @@ public class ReportMapper {
         );
         return dailyBalances.values().stream().mapToDouble(Double::doubleValue).sum() / daysInPeriod;
     }
-*/
-    public static double calculateTotalCommissions(List<TransactionDto> transactions) {
-        // Suma las comisiones de todas las transacciones
-        // Asume que la comisión se calcula como un porcentaje del monto de la transacción
-        // y que el porcentaje de la comisión se almacena en un campo 'commissionRate' en TransactionDto
-        // Si tu lógica para calcular las comisiones es diferente, necesitarás ajustar esto
-        return transactions.stream()
-                .filter(transaction -> transaction.getCommission() != null)
-                .mapToDouble(TransactionDto::getCommission)
-                .sum();
-    }
-}
+    */

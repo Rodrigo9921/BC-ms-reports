@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -51,17 +52,16 @@ public class ReportServiceImpl implements ReportService {
                     return ReportMapper.calculateAverageDailyBalance(Flux.fromIterable(transactions), reportDate)
                             .map(averageDailyBalance -> {
                                 ReportDto report = new ReportDto();
+                                report.setReportId(UUID.randomUUID().toString());
                                 report.setClientId(clientId);
                                 report.setReportDate(reportDate);
                                 report.setAverageDailyBalance(averageDailyBalance);
                                 report.setTotalCommissions(ReportMapper.calculateTotalCommissions(transactions));
                                 return report;
                             });
-                });
+                }).flatMap(reportDto -> reportRepository.save(ReportMapper.toEntity(reportDto))
+                        .thenReturn(reportDto));  // Guarda el Report en la base de datos y luego devuelve el ReportDto;
     }
-
-
-
     /*
     @Override
     public Mono<ReportDto> generateReport(String clientId) {
