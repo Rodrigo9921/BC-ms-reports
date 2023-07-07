@@ -62,40 +62,10 @@ public class ReportServiceImpl implements ReportService {
                 }).flatMap(reportDto -> reportRepository.save(ReportMapper.toEntity(reportDto))
                         .thenReturn(reportDto));  // Guarda el Report en la base de datos y luego devuelve el ReportDto;
     }
-    /*
-    @Override
-    public Mono<ReportDto> generateReport(String clientId) {
-        // Obtén los datos necesarios de los otros microservicios
-        Mono<ClientDto> clientMono = msClientWebClient.get()
-                .uri("/" + clientId)
-                .retrieve()
-                .bodyToMono(ClientDto.class);
-
-        Mono<List<TransactionDto>> transactionsMono = msTransactionsWebClient.get()
-                .uri("/client/" + clientId)
-                .retrieve()
-                .bodyToFlux(TransactionDto.class)
-                .collectList();
-
-        // Combina los datos obtenidos para generar el informe
-        return Mono.zip(clientMono, transactionsMono)
-                .flatMap(tuple -> {
-                    ClientDto client = tuple.getT1();
-                    List<TransactionDto> transactions = tuple.getT2();
-
-                    Report report = new Report();
-                    report.setClientId(clientId);
-                    report.setAverageDailyBalance(ReportMapper.calculateAverageDailyBalance(transactions));
-                    report.setTotalCommissions(ReportMapper.calculateTotalCommissions(transactions));
-
-                    return reportRepository.save(report)
-                            .map(ReportMapper::toDto);
-                });
-    }
-*/
     @Override
     public Mono<ReportDto> getReport(String reportId) {
         return reportRepository.findById(reportId)
                 .map(ReportMapper::toDto);
     }
+
 }
